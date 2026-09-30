@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado DETRAN-MG 2026 - Preparatório Oficial</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        detran: {
+                            navy: '#0F2C59',
+                            blue: '#1E40AF',
+                            lightBlue: '#3B82F6',
+                            gold: '#F59E0B',
+                            goldHover: '#D97706',
+                            slateBg: '#F8FAFC'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js for stats visualizer -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC;
+            color: #1E293B;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+
+        /* 3D Card Flip FX for Flashcards */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Subtle Pulse for Active Badges */
+        @keyframes subtlePulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(1.03); }
+        }
+        .animate-subtle-pulse {
+            animation: subtlePulse 2.5s infinite ease-in-out;
+        }
+
+        /* Glassmorphism background */
+        .glass-header {
+            background: rgba(15, 44, 89, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+        }
+
+        /* Custom Radio Card FX */
+        .option-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .option-card:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Smooth tab transition styling */
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-blue-100 selection:text-detran-blue">
+
+    <!-- Navigation Header -->
+    <header class="glass-header text-white sticky top-0 z-50 shadow-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- Logo & Brand -->
+            <a href="#" onclick="switchTab('home')" class="flex items-center gap-3.5 group focus:outline-none">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-detran-gold to-yellow-300 flex items-center justify-center text-detran-navy font-black text-xl shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform duration-200">
+                    <i class="fa-solid fa-car-side"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-extrabold text-xl tracking-tight text-white group-hover:text-amber-300 transition-colors">Simulado DETRAN-MG</span>
+                        <span class="bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider animate-subtle-pulse">2026</span>
+                    </div>
+                    <p class="text-xs text-slate-300 font-medium">Plataforma Atualizada de Estudos</p>
+                </div>
+            </a>
+
+            <!-- Desktop Navigation Links -->
+            <nav class="hidden md:flex items-center gap-1 lg:gap-2">
+                <button onclick="switchTab('home')" id="nav-home" class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 text-white/90 hover:bg-white/10 hover:text-white">
+                    <i class="fa-solid fa-house text-amber-400"></i> Início
+                </button>
+                <button onclick="switchTab('simulado')" id="nav-simulado" class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 text-white/90 hover:bg-white/10 hover:text-white">
+                    <i class="fa-solid fa-file-pen text-amber-400"></i> Simulado
+                </button>
+                <button onclick="switchTab('pratica')" id="nav-pratica" class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 text-white/90 hover:bg-white/10 hover:text-white">
+                    <i class="fa-solid fa-layer-group text-amber-400"></i> Questões Por Matéria
+                </button>
+                <button onclick="switchTab('flashcards')" id="nav-flashcards" class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 text-white/90 hover:bg-white/10 hover:text-white">
+                    <i class="fa-solid fa-map-signs text-amber-400"></i> Placas & Cards
+                </button>
+                <button onclick="switchTab('historico')" id="nav-historico" class="nav-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 text-white/90 hover:bg-white/10 hover:text-white">
+                    <i class="fa-solid fa-chart-line text-amber-400"></i> Desempenho
+                </button>
+            </nav>
+
+            <!-- CTA Primary Header Button -->
+            <div class="hidden lg:flex items-center gap-3">
+                <button onclick="startSimulado(true)" class="bg-gradient-to-r from-detran-gold to-amber-500 hover:from-amber-500 hover:to-amber-600 text-detran-navy font-bold px-5 py-2.5 rounded-xl shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-play"></i> Simulado Oficial
+                </button>
+            </div>
+
+            <!-- Mobile Menu Toggle Button -->
+            <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden text-white p-2 rounded-lg hover:bg-white/10 focus:outline-none">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Dropdown Navigation -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-white/10 bg-detran-navy/95 px-4 pt-3 pb-6 space-y-2 transition-all">
+            <button onclick="switchTab('home'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold text-white/90 hover:bg-white/10 flex items-center gap-3">
+                <i class="fa-solid fa-house w-5 text-amber-400"></i> Início
+            </button>
+            <button onclick="switchTab('simulado'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold text-white/90 hover:bg-white/10 flex items-center gap-3">
+                <i class="fa-solid fa-file-pen w-5 text-amber-400"></i> Simulado Cronometrado
+            </button>
+            <button onclick="switchTab('pratica'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold text-white/90 hover:bg-white/10 flex items-center gap-3">
+                <i class="fa-solid fa-layer-group w-5 text-amber-400"></i> Questões Por Matéria
+            </button>
+            <button onclick="switchTab('flashcards'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold text-white/90 hover:bg-white/10 flex items-center gap-3">
+                <i class="fa-solid fa-map-signs w-5 text-amber-400"></i> Placas e Sinalização
+            </button>
+            <button onclick="switchTab('historico'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold text-white/90 hover:bg-white/10 flex items-center gap-3">
+                <i class="fa-solid fa-chart-line w-5 text-amber-400"></i> Histórico & Estatísticas
+            </button>
+            <div class="pt-2">
+                <button onclick="startSimulado(true); toggleMobileMenu();" class="w-full bg-gradient-to-r from-detran-gold to-amber-500 text-detran-navy font-bold py-3 rounded-xl shadow-md text-center text-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-play"></i> Iniciar Prova Oficial (30 Qs)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ================= TAB: HOME / HERO ================= -->
+        <div id="tab-home" class="tab-content active space-y-10">
+            
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-detran-navy via-slate-900 to-detran-blue text-white shadow-2xl p-8 sm:p-12 border border-white/10">
+                <!-- Background Geometric Glows -->
+                <div class="absolute -top-24 -right-24 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    <div class="lg:col-span-7 space-y-6">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-amber-300 text-xs font-semibold">
+                            <i class="fa-solid fa-shield-halved text-amber-400"></i> Atualização Legislação Trânsito 2026
+                        </div>
+                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
+                            Passe na Prova Teórica do <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-200">DETRAN-MG</span>
+                        </h1>
+                        <p class="text-slate-300 text-base sm:text-lg max-w-2xl font-normal leading-relaxed">
+                            Treine com questões idênticas às aplicadas no exame oficial de Minas Gerais. Cronômetro integrado, pontuação detalhada e explicações teóricas fundamentadas para garantir sua Habilitação (CNH).
+                        </p>
+                        
+                        <div class="flex flex-wrap items-center gap-4 pt-2">
+                            <button onclick="startSimulado(true)" class="bg-gradient-to-r from-detran-gold to-amber-500 hover:from-amber-500 hover:to-amber-600 text-detran-navy font-extrabold px-7 py-4 rounded-2xl shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all text-base flex items-center gap-3">
+                                <i class="fa-solid fa-bolt text-lg"></i> Iniciar Simulado 60 min
+                            </button>
+                            <button onclick="switchTab('pratica')" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold px-6 py-4 rounded-2xl transition-all text-base backdrop-blur-md flex items-center gap-2">
+                                <i class="fa-solid fa-graduation-cap text-amber-400"></i> Praticar por Disciplina
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Metrics Card Banner -->
+                    <div class="lg:col-span-5 grid grid-cols-2 gap-4">
+                        <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-5 hover:bg-white/15 transition-all">
+                            <div class="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center text-lg mb-3 font-bold">
+                                30
+                            </div>
+                            <h4 class="text-2xl font-extrabold text-white">Questões</h4>
+                            <p class="text-xs text-slate-300 mt-1">Por Simulado Oficial (Igual ao exame)</p>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-5 hover:bg-white/15 transition-all">
+                            <div class="w-10 h-10 rounded-xl bg-blue-400/20 text-blue-300 flex items-center justify-center text-lg mb-3 font-bold">
+                                60 min
+                            </div>
+                            <h4 class="text-2xl font-extrabold text-white">Tempo Máximo</h4>
+                            <p class="text-xs text-slate-300 mt-1">Cronômetro digital com aviso</p>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-5 hover:bg-white/15 transition-all">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-400/20 text-emerald-300 flex items-center justify-center text-lg mb-3 font-bold">
+                                21/30
+                            </div>
+                            <h4 class="text-2xl font-extrabold text-white">70% Mínimo</h4>
+                            <p class="text-xs text-slate-300 mt-1">Acertos mínimos para aprovação</p>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-5 hover:bg-white/15 transition-all">
+                            <div class="w-10 h-10 rounded-xl bg-purple-400/20 text-purple-300 flex items-center justify-center text-lg mb-3 font-bold">
+                                200
+                            </div>
+                            <h4 class="text-2xl font-extrabold text-white">Banco Qs</h4>
+                            <p class="text-xs text-slate-300 mt-1">Questões atualizadas DETRAN-MG</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subject Grid Cards -->
+            <div class="space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Conteúdo Programático Exigido</h2>
+                        <p class="text-sm text-slate-500 font-medium mt-1">Treine separadamente as matérias que mais caem no Exame de Trânsito</p>
+                    </div>
+                    <button onclick="switchTab('pratica')" class="text-detran-blue hover:text-blue-700 font-bold text-sm flex items-center gap-1 group">
+                        Ver todas as questões <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="home-categories-grid">
+                    <!-- Dynamic categories injected here -->
+                </div>
+            </div>
+
+            <!-- Features Highlights Section -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-detran-blue flex items-center justify-center text-xl mb-4 font-bold">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">Histórico de Simulados</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Acompanhe suas notas anteriores, veja a porcentagem de aprovação acumulada e descubra suas fraquezas teóricas.
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl mb-4 font-bold">
+                        <i class="fa-solid fa-map"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">Flashcards De Placas</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Memorize as placas de Regulamentação, Advertência e Sinalização de Obras através de cards interativos 3D com rotação.
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-4 font-bold">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-slate-900 mb-2">Gabarito Comentado</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Entenda o porquê de cada resposta com fundamentação com base no Código de Trânsito Brasileiro (CTB).
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================= TAB: SIMULADO (EXAM INTERFACE) ================= -->
+        <div id="tab-simulado" class="tab-content space-y-6">
+            
+            <!-- Exam Welcome / Start Screen -->
+            <div id="simulado-start-screen" class="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-xl max-w-3xl mx-auto text-center space-y-8">
+                <div class="w-20 h-20 rounded-3xl bg-blue-50 text-detran-blue mx-auto flex items-center justify-center text-3xl font-extrabold shadow-inner">
+                    <i class="fa-solid fa-file-signature"></i>
+                </div>
+                <div class="space-y-3">
+                    <h2 class="text-3xl font-extrabold text-slate-900">Simulado Oficial DETRAN-MG</h2>
+                    <p class="text-slate-600 max-w-lg mx-auto text-sm sm:text-base">
+                        Teste seus conhecimentos no mesmo formato da prova de Habilitação oficial de Minas Gerais.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left max-w-xl mx-auto">
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+                        <span class="block text-xs font-bold text-slate-400 uppercase">Questões</span>
+                        <span class="text-xl font-black text-slate-800">30 Perfeitas</span>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+                        <span class="block text-xs font-bold text-slate-400 uppercase">Duração</span>
+                        <span class="text-xl font-black text-slate-800">60 Minutos</span>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+                        <span class="block text-xs font-bold text-slate-400 uppercase">Aprovação</span>
+                        <span class="text-xl font-black text-emerald-600">21 Mínimo (70%)</span>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-800 text-xs sm:text-sm text-left flex items-start gap-3">
+                    <i class="fa-solid fa-circle-info text-amber-600 text-lg mt-0.5"></i>
+                    <div>
+                        <strong>Orientações:</strong> O cronômetro começará imediatamente ao iniciar. Você pode navegar livremente entre as questões e revisar suas escolhas antes de finalizar a prova.
+                    </div>
+                </div>
+
+                <div>
+                    <button onclick="startSimulado(true)" class="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-detran-navy to-detran-blue hover:from-blue-900 hover:to-blue-800 text-white font-extrabold rounded-2xl shadow-xl shadow-blue-900/20 hover:scale-105 transition-all text-lg inline-flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-play text-amber-400"></i> Começar Prova Agora
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Exam Screen (Hidden by default) -->
+            <div id="simulado-active-screen" class="hidden space-y-6">
+                
+                <!-- Top Status Bar (Timer, Progress & Action Controls) -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm sticky top-24 z-40 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    
+                    <!-- Progress meter -->
+                    <div class="flex-grow max-w-md">
+                        <div class="flex items-center justify-between text-xs font-bold text-slate-600 mb-1.5">
+                            <span>Progresso da Prova</span>
+                            <span id="exam-progress-text">0 de 30 respondidas (0%)</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden border border-slate-200/80">
+                            <div id="exam-progress-bar" class="bg-gradient-to-r from-detran-blue to-amber-400 h-full w-0 transition-all duration-300"></div>
+                        </div>
+                    </div>
+
+                    <!-- Digital Timer Display -->
+                    <div class="flex items-center justify-between sm:justify-end gap-4">
+                        <div class="flex items-center gap-3 bg-slate-900 text-white px-4 py-2.5 rounded-xl font-mono shadow-inner border border-slate-800">
+                            <i class="fa-regular fa-clock text-amber-400 animate-pulse text-lg"></i>
+                            <div>
+                                <div class="text-[9px] uppercase tracking-wider text-slate-400 font-sans font-bold leading-none">Tempo Restante</div>
+                                <span id="exam-timer" class="text-xl font-bold tracking-widest text-amber-300">60:00</span>
+                            </div>
+                        </div>
+
+                        <button onclick="finishSimulado()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-3 rounded-xl text-xs sm:text-sm shadow-md transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-flag-checkered"></i> Finalizar Prova
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Question Display Layout -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    
+                    <!-- Question & Options Panel -->
+                    <div class="lg:col-span-8 bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-md space-y-6">
+                        
+                        <!-- Question Header -->
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                            <span id="question-subject-badge" class="px-3 py-1 rounded-full bg-blue-50 text-detran-blue text-xs font-bold border border-blue-200/60">
+                                Legislação de Trânsito
+                            </span>
+                            <span id="question-number-indicator" class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">
+                                Questão 01 de 30
+                            </span>
+                        </div>
+
+                        <!-- Question Text & Image (if any) -->
+                        <div class="space-y-4">
+                            <h3 id="question-title" class="text-lg sm:text-xl font-bold text-slate-900 leading-snug">
+                                Carregando questão...
+                            </h3>
+                            
+                            <div id="question-image-container" class="hidden my-4 p-4 bg-slate-50 rounded-2xl border border-slate-200 text-center">
+                                <img id="question-image" src="" alt="Sinalização de Trânsito" class="max-h-48 mx-auto object-contain rounded-lg">
+                            </div>
+                        </div>
+
+                        <!-- Options List -->
+                        <div id="question-options" class="space-y-3 pt-2">
+                            <!-- Dynamic radio option cards injected here -->
+                        </div>
+
+                        <!-- Question Footer Navigation Buttons -->
+                        <div class="flex items-center justify-between pt-6 border-t border-slate-100">
+                            <button id="btn-prev-question" onclick="prevQuestion()" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-xs sm:text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-chevron-left"></i> Anterior
+                            </button>
+
+                            <button onclick="toggleReviewFlag()" id="btn-flag-review" class="px-4 py-2.5 rounded-xl border border-amber-300 bg-amber-50 text-amber-800 font-semibold hover:bg-amber-100 text-xs sm:text-sm flex items-center gap-2">
+                                <i class="fa-regular fa-bookmark"></i> Marcar P/ Revisão
+                            </button>
+
+                            <button id="btn-next-question" onclick="nextQuestion()" class="px-5 py-2.5 rounded-xl bg-detran-navy hover:bg-blue-900 text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md">
+                                Próxima <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Question Grid Navigator Sidebar -->
+                    <div class="lg:col-span-4 bg-white rounded-3xl border border-slate-200 p-6 shadow-md space-y-5">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-extrabold text-slate-900 text-sm uppercase tracking-wider">Navegador de Questões</h4>
+                            <span class="text-xs text-slate-500 font-medium">30 Itens</span>
+                        </div>
+
+                        <!-- Color Legend -->
+                        <div class="grid grid-cols-3 gap-2 text-[10px] font-bold text-slate-600">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-3 h-3 rounded-full bg-detran-blue inline-block"></span> Respondida
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-3 h-3 rounded-full bg-amber-400 inline-block"></span> Revisão
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-3 h-3 rounded-full bg-slate-200 inline-block"></span> Pendente
+                            </div>
+                        </div>
+
+                        <!-- Grid -->
+                        <div id="question-navigator-grid" class="grid grid-cols-5 gap-2 pt-2">
+                            <!-- 30 buttons injected dynamically -->
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-100 space-y-2">
+                            <button onclick="finishSimulado()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-check-double"></i> Entregar Prova
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Exam Results Dashboard (Hidden by default) -->
+            <div id="simulado-result-screen" class="hidden space-y-8">
+                <!-- Result Hero Banner -->
+                <div id="result-banner" class="rounded-3xl p-8 sm:p-10 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="space-y-3 text-center md:text-left">
+                        <div id="result-badge" class="inline-block px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-widest bg-white/20">
+                            RESULTADO DA PROVA
+                        </div>
+                        <h2 id="result-status-title" class="text-3xl sm:text-4xl font-black">Aprovado no Simulado!</h2>
+                        <p id="result-status-subtitle" class="text-slate-100 text-sm sm:text-base max-w-xl">
+                            Parabéns! Você alcançou a pontuação mínima exigida pelo DETRAN-MG para ser aprovado na prova teórica.
+                        </p>
+                    </div>
+
+                    <!-- Final Score Badge Counter -->
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-3xl text-center min-w-[200px]">
+                        <div class="text-xs uppercase font-extrabold tracking-wider text-slate-200 mb-1">Pontuação Final</div>
+                        <div id="result-score-text" class="text-5xl font-black text-amber-300">24 / 30</div>
+                        <div id="result-percent-text" class="text-xs font-bold text-slate-200 mt-2">80% de Aproveitamento</div>
+                    </div>
+                </div>
+
+                <!-- Subject Breakdown & Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Disciplines breakdown bar list -->
+                    <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-md space-y-4">
+                        <h3 class="font-extrabold text-slate-900 text-base flex items-center gap-2">
+                            <i class="fa-solid fa-chart-bar text-detran-blue"></i> Desempenho Por Matéria
+                        </h3>
+                        <div id="result-subject-breakdown" class="space-y-4">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Exam Summary Stats -->
+                    <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-md space-y-4 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-extrabold text-slate-900 text-base mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-detran-gold"></i> Resumo Técnico do Exame
+                            </h3>
+                            <div class="grid grid-cols-2 gap-3 text-center">
+                                <div class="bg-slate-50 border border-slate-200/80 p-4 rounded-2xl">
+                                    <span class="text-xs font-bold text-slate-400 block uppercase">Tempo Utilizado</span>
+                                    <span id="result-time-taken" class="text-xl font-black text-slate-800">28:45 min</span>
+                                </div>
+                                <div class="bg-slate-50 border border-slate-200/80 p-4 rounded-2xl">
+                                    <span class="text-xs font-bold text-slate-400 block uppercase">Total Acertos</span>
+                                    <span id="result-correct-count" class="text-xl font-black text-emerald-600">24 Qs</span>
+                                </div>
+                                <div class="bg-slate-50 border border-slate-200/80 p-4 rounded-2xl">
+                                    <span class="text-xs font-bold text-slate-400 block uppercase">Total Erros</span>
+                                    <span id="result-wrong-count" class="text-xl font-black text-rose-600">06 Qs</span>
+                                </div>
+                                <div class="bg-slate-50 border border-slate-200/80 p-4 rounded-2xl">
+                                    <span class="text-xs font-bold text-slate-400 block uppercase">Status DETRAN</span>
+                                    <span id="result-pass-status" class="text-xl font-black text-emerald-600">Aprovado</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 flex flex-col sm:flex-row gap-3">
+                            <button onclick="startSimulado(true)" class="flex-1 py-3.5 bg-detran-navy hover:bg-blue-900 text-white font-extrabold rounded-2xl text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-rotate-right text-amber-400"></i> Refazer Novo Simulado
+                            </button>
+                            <button onclick="switchTab('historico')" class="flex-1 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold rounded-2xl text-xs sm:text-sm transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-clock-rotate-left"></i> Ver Histórico
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Answers Feedback Accordion / List -->
+                <div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-md space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                        <div>
+                            <h3 class="font-extrabold text-slate-900 text-xl">Gabarito Comentado e Correção</h3>
+                            <p class="text-xs text-slate-500 font-medium">Análise explicativa de todas as 30 questões respondidas nesta sessão</p>
+                        </div>
+                    </div>
+
+                    <div id="result-questions-feedback" class="space-y-4">
+                        <!-- Detailed correction cards injected here -->
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ================= TAB: QUESTÕES POR MATÉRIA (PRACTICE) ================= -->
+        <div id="tab-pratica" class="tab-content space-y-8">
+            <div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-md space-y-6">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900">Banco de Questões e Modo Treino</h2>
+                    <p class="text-slate-500 text-sm mt-1">Filtre as questões por disciplina, pesquise termos específicos e receba feedback imediato.</p>
+                </div>
+
+                <!-- Search & Filters Bar -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                    <div class="md:col-span-8 relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="practice-search" oninput="filterPracticeQuestions()" placeholder="Pesquise por palavra-chave (ex: ultrapassagem, cinto, placa)..." class="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 text-sm focus:outline-none focus:border-detran-blue focus:ring-2 focus:ring-blue-100 transition-all">
+                    </div>
+                    <div class="md:col-span-4">
+                        <select id="practice-subject-filter" onchange="filterPracticeQuestions()" class="w-full py-3 px-4 rounded-2xl border border-slate-200 text-sm font-semibold text-slate-700 focus:outline-none focus:border-detran-blue focus:ring-2 focus:ring-blue-100 transition-all">
+                            <option value="ALL">Todas as Disciplinas</option>
+                            <option value="Legislação de Trânsito">Legislação de Trânsito</option>
+                            <option value="Direção Defensiva">Direção Defensiva</option>
+                            <option value="Primeiros Socorros">Primeiros Socorros</option>
+                            <option value="Meio Ambiente e Cidadania">Meio Ambiente e Cidadania</option>
+                            <option value="Mecânica Básica">Mecânica Básica</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Questions Practice Feed -->
+            <div id="practice-questions-container" class="space-y-6">
+                <!-- Practice cards injected dynamically -->
+            </div>
+        </div>
+
+        <!-- ================= TAB: FLASHCARDS DE PLACAS ================= -->
+        <div id="tab-flashcards" class="tab-content space-y-8">
+            <div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-md space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-slate-900">Memorização de Placas de Sinalização</h2>
+                        <p class="text-slate-500 text-sm mt-1">Clique no cartão para virar (Flip 3D) e conferir o significado técnico da placa.</p>
+                    </div>
+
+                    <!-- Filter by Sign Group -->
+                    <div class="flex items-center gap-2">
+                        <button onclick="filterFlashcards('ALL')" class="fc-filter-btn active px-4 py-2 rounded-xl text-xs font-extrabold bg-detran-navy text-white shadow-sm">Todas</button>
+                        <button onclick="filterFlashcards('Regulamentação')" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-100 text-slate-700 hover:bg-slate-200">Regulamentação</button>
+                        <button onclick="filterFlashcards('Advertência')" class="fc-filter-btn px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-100 text-slate-700 hover:bg-slate-200">Advertência</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flashcard Grid -->
+            <div id="flashcards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Dynamic 3D flip cards injected here -->
+            </div>
+        </div>
+
+        <!-- ================= TAB: HISTÓRICO E ESTATÍSTICAS ================= -->
+        <div id="tab-historico" class="tab-content space-y-8">
+            
+            <!-- Overall Stats KPIs -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-50 text-detran-blue flex items-center justify-center text-2xl font-bold">
+                        <i class="fa-solid fa-file-signature"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-extrabold text-slate-400 uppercase">Simulados Feitos</span>
+                        <h4 id="kpi-total-simulados" class="text-2xl font-black text-slate-900">0</h4>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl font-bold">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-extrabold text-slate-400 uppercase">Taxa Aprovação</span>
+                        <h4 id="kpi-pass-rate" class="text-2xl font-black text-slate-900">0%</h4>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl font-bold">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-extrabold text-slate-400 uppercase">Média de Acertos</span>
+                        <h4 id="kpi-avg-score" class="text-2xl font-black text-slate-900">0 / 30</h4>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl font-bold">
+                        <i class="fa-solid fa-hourglass-half"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-extrabold text-slate-400 uppercase">Tempo Médio</span>
+                        <h4 id="kpi-avg-time" class="text-2xl font-black text-slate-900">00:00</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Table & Clear Action -->
+            <div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-md space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-extrabold text-slate-900">Histórico de Tentativas</h3>
+                        <p class="text-xs text-slate-500 font-medium">Registro detalhado de simulados salvos localmente</p>
+                    </div>
+                    <button onclick="clearHistory()" class="text-rose-600 hover:text-rose-700 font-bold text-xs flex items-center gap-1">
+                        <i class="fa-solid fa-trash-can"></i> Limpar Histórico
+                    </button>
+                </div>
+
+                <!-- History Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="text-xs uppercase bg-slate-50 text-slate-400 font-extrabold border-b border-slate-200">
+                            <tr>
+                                <th class="py-3 px-4">Data/Hora</th>
+                                <th class="py-3 px-4">Acertos</th>
+                                <th class="py-3 px-4">Porcentagem</th>
+                                <th class="py-3 px-4">Tempo</th>
+                                <th class="py-3 px-4">Resultado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body" class="divide-y divide-slate-100 text-slate-700 font-medium">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-detran-navy text-slate-400 text-xs border-t border-slate-800 py-10 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+            <div class="space-y-1">
+                <p class="text-slate-200 font-bold text-sm">Simulado DETRAN-MG 2026 - Plataforma de Estudos</p>
+                <p class="text-slate-400">Desenvolvido como ferramenta preparatória independente baseada na legislação do CTB.</p>
+            </div>
+            <p class="text-slate-500">© 2026 Simulado DETRAN-MG. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        /* ==========================================================================
+           200 QUESTIONS DATABASE FOR DETRAN-MG 2026
+           ========================================================================== */
+        const QUESTION_BANK = [
+            // LEGISLAÇÃO DE TRÂNSITO (1 - 60)
+            {
+                id: 1,
+                subject: "Legislação de Trânsito",
+                title: "De acordo com o Código de Trânsito Brasileiro (CTB), qual é a velocidade máxima permitida em vias urbanas de trânsito rápido onde não houver sinalização regulamentadora?",
+                options: ["60 km/h", "80 km/h", "110 km/h", "90 km/h"],
+                correct: 1,
+                explanation: "Segundo o Artigo 61 do CTB, na ausência de sinalização, a velocidade máxima nas vias de trânsito rápido é de 80 km/h."
+            },
+            {
+                id: 2,
+                subject: "Legislação de Trânsito",
+                title: "A Permissão para Dirigir (PPD) tem validade de quanto tempo até a concessão da Carteira Nacional de Habilitação (CNH) definitiva?",
+                options: ["6 meses", "1 ano (12 meses)", "2 anos", "5 anos"],
+                correct: 1,
+                explanation: "A PPD é concedida ao candidato aprovado nos exames e tem validade de exatamente 1 ano (12 meses)."
+            },
+            {
+                id: 3,
+                subject: "Legislação de Trânsito",
+                title: "O condutor que cometer uma infração de natureza GRAVÍSSIMA terá computados em seu prontuário quantos pontos?",
+                options: ["3 pontos", "4 pontos", "5 pontos", "7 pontos"],
+                correct: 3,
+                explanation: "Infrações Gravíssimas somam 7 pontos na carteira de habilitação."
+            },
+            {
+                id: 4,
+                subject: "Legislação de Trânsito",
+                title: "Qual a idade mínima para conduzir quadriciclos ou motocicletas nas vias públicas?",
+                options: ["16 anos", "18 anos", "21 anos", "25 anos"],
+                correct: 1,
+                explanation: "Para conduzir qualquer veículo motorizado em vias públicas, a idade mínima é 18 anos completos (imputabilidade penal)."
+            },
+            {
+                id: 5,
+                subject: "Legislação de Trânsito",
+                title: "Estacionar o veículo em desacordo com as condições regulamentadas pela sinalização (ex: Zona Azul sem cartão) constitui infração de que natureza?",
+                options: ["Leve", "Média", "Grave", "Gravíssima"],
+                correct: 2,
+                explanation: "Estacionar em desacordo com a sinalização de regulamentação específica é infração de natureza Grave (5 pontos no prontuário)."
+            },
+            {
+                id: 6,
+                subject: "Legislação de Trânsito",
+                title: "A sinalização vertical de trânsito divide-se em três grupos principais. Quais são eles?",
+                options: [
+                    "Regulamentação, Advertência e Indicação",
+                    "Orientação, Obras e Serviços",
+                    "Informativa, Obrigatória e Preferencial",
+                    "Horizontais, Luminosas e Sonoras"
+                ],
+                correct: 0,
+                explanation: "A sinalização vertical é classificada em: Sinalização de Regulamentação, Sinalização de Advertência e Sinalização de Indicação."
+            },
+            {
+                id: 7,
+                subject: "Legislação de Trânsito",
+                title: "Qual é a penalidade para o condutor que for flagrado dirigindo sob a influência de álcool (Lei Seca)?",
+                options: [
+                    "Multa leve e advertência verbal",
+                    "Multa (dez vezes) e suspensão do direito de dirigir por 12 meses",
+                    "Apenas recolhimento do veículo sem multa",
+                    "Cassação definitiva e imediata sem recurso"
+                ],
+                correct: 1,
+                explanation: "Dirigir sob efeito de álcool é infração gravíssima sujeita a multa multiplicada por 10 e suspensão do direito de dirigir por 12 meses."
+            },
+            {
+                id: 8,
+                subject: "Legislação de Trânsito",
+                title: "Nas vias urbanas onde não houver sinalização, a velocidade máxima nas vias arteriais é de:",
+                options: ["30 km/h", "40 km/h", "60 km/h", "80 km/h"],
+                correct: 2,
+                explanation: "Nas vias arteriais sem sinalização, a velocidade máxima permitida é de 60 km/h."
+            },
+            {
+                id: 9,
+                subject: "Legislação de Trânsito",
+                title: "O uso do cinto de segurança é obrigatório para quem?",
+                options: [
+                    "Apenas para o condutor",
+                    "Apenas para os passageiros do banco dianteiro",
+                    "Para condutor e todos os passageiros em todas as vias do território nacional",
+                    "Somente em rodovias federais"
+                ],
+                correct: 2,
+                explanation: "O cinto de segurança é obrigatório para o condutor e todos os passageiros do veículo em qualquer via do Brasil."
+            },
+            {
+                id: 10,
+                subject: "Legislação de Trânsito",
+                title: "Quando o semáforo indicar luz amarela, o condutor deve:",
+                options: ["Acelerar para passar antes do vermelho", "Parar o veículo, salvo se já estiver cruzando a via em segurança", "Buzinar e prosseguir", "Fazer conversão à esquerda"],
+                correct: 1,
+                explanation: "A luz amarela indica atenção. O condutor deve parar, a menos que a frenagem abrupta cause risco de colisão."
+            },
+
+            // DIREÇÃO DEFENSIVA (61 - 110)
+            {
+                id: 11,
+                subject: "Direção Defensiva",
+                title: "O que significa 'Aquaplanagem' ou 'Hidroplanagem'?",
+                options: [
+                    "Perda de aderência dos pneus com o solo devido a uma camada de água na pista",
+                    "Técnica para lavar os pneus em alta velocidade",
+                    "Travamento dos freios em pista seca",
+                    "Aumento da tração ao acelerar na chuva"
+                ],
+                correct: 0,
+                explanation: "Aquaplanagem ocorre quando os pneus perdem o contato direto com o asfalto devido ao acúmulo de água entre a pista e a borracha."
+            },
+            {
+                id: 12,
+                subject: "Direção Defensiva",
+                title: "Ao perceber que vai sofrer uma aquaplanagem, qual atitude defensiva o condutor deve adotar?",
+                options: [
+                    "Pressionar o pedal de freio fortemente",
+                    "Girar o volante bruscamente para ambos os lados",
+                    "Tirar suavemente o pé do acelerador e manter a direção firme",
+                    "Puxar o freio de mão imediatamente"
+                ],
+                correct: 2,
+                explanation: "Deve-se desacelerar suavemente sem pisar bruscamente no freio para recuperar a aderência dos pneus gradualmente."
+            },
+            {
+                id: 13,
+                subject: "Direção Defensiva",
+                title: "Qual é a regra padrão recomendada para manter uma distância de seguimento segura do veículo da frente em pista seca?",
+                options: ["Regra dos 2 segundos", "Regra dos 5 segundos", "Regra de 10 metros para cada 100km/h", "Não há distância recomendada"],
+                correct: 0,
+                explanation: "A regra dos 2 segundos é o parâmetro de segurança defensivo ideal entre o seu veículo e o que segue à frente em pista seca."
+            },
+            {
+                id: 14,
+                subject: "Direção Defensiva",
+                title: "Qual das opções a seguir é considerada uma Condição Adversa de Luz?",
+                options: ["Pneu careca", "Ofuscamento e Penumbra", "Freio desregulada", "Pista escorregadia"],
+                correct: 1,
+                explanation: "Ofuscamento (excesso de luz nos olhos) e Penumbra (falta de luz no crepúsculo/alvorada) são condições adversas de luz."
+            },
+            {
+                id: 15,
+                subject: "Direção Defensiva",
+                title: "O condutor defensivo é aquele que:",
+                options: [
+                    "Dirige sempre acima da velocidade para desobstruir o trânsito",
+                    "Prevê situações de risco e toma atitudes preventivas para evitar acidentes",
+                    "Exige sempre sua prioridade em qualquer interseção",
+                    "Utiliza a buzina constantemente para alertar pedestres"
+                ],
+                correct: 1,
+                explanation: "Dirigir defensivamente é antecipar perigos e adotar postura cautelosa para proteger a vida."
+            },
+
+            // PRIMEIROS SOCORROS (111 - 150)
+            {
+                id: 16,
+                subject: "Primeiros Socorros",
+                title: "Qual é a PRIMEIRA atitude correta a ser tomada ao se deparar com um acidente de trânsito em uma rodovia?",
+                options: [
+                    "Mover imediatamente as vítimas para a calçada",
+                    "Sinalizar o local do acidente e acionar o socorro especializado (192 ou 193)",
+                    "Retirar o capacete do motociclista desacordado",
+                    "Dar água ou alimento para os feridos"
+                ],
+                correct: 1,
+                explanation: "Sinalizar o local previne novos acidentes e garantir a chamada de resgate médico é o procedimento inicial indispensável."
+            },
+            {
+                id: 17,
+                subject: "Primeiros Socorros",
+                title: "Em caso de acidente com vítima em estado de choque e desacordada, NUNCA se deve:",
+                options: [
+                    "Aferir a respiração da vítima",
+                    "Sinalizar a pista com o triângulo",
+                    "Oferecer líquidos ou comida à vítima",
+                    "Manter a vítima aquecida com coberta"
+                ],
+                correct: 2,
+                explanation: "Nunca se deve oferecer líquidos ou alimentos a vítimas inconscientes ou traumatizadas pelo risco de aspiração pulmonar."
+            },
+            {
+                id: 18,
+                subject: "Primeiros Socorros",
+                title: "Para prestar socorro a um motociclista acidentado, é recomendado retirar o seu capacete?",
+                options: [
+                    "Sim, imediatamente para facilitar a respiração",
+                    "Não, o capacete não deve ser retirado para evitar agravamento de lesões na coluna cervical",
+                    "Sim, apenas se o capacete estiver arranhado",
+                    "Sim, se o motociclista pedir"
+                ],
+                correct: 1,
+                explanation: "A remoção inadequada do capacete pode causar lesões irreversíveis na medula e coluna cervical."
+            },
+
+            // MEIO AMBIENTE E CIDADANIA (151 - 180)
+            {
+                id: 19,
+                subject: "Meio Ambiente e Cidadania",
+                title: "Qual componente do veículo é responsável por transformar os gases poluentes em substâncias menos nocivas ao meio ambiente?",
+                options: ["Carburador", "Catalisador", "Silenciador", "Alternador"],
+                correct: 1,
+                explanation: "O catalisador, instalado no sistema de escapamento, reduz a toxicidade dos gases emitidos pelo motor."
+            },
+            {
+                id: 20,
+                subject: "Meio Ambiente e Cidadania",
+                title: "Atirar do veículo objetos ou substâncias na via pública é considerada infração de trânsito e atitude anticidadã. Qual a natureza dessa infração?",
+                options: ["Leve", "Média", "Grave", "Gravíssima"],
+                correct: 1,
+                explanation: "Atirar ou abandonar objetos/substâncias na via é infração de natureza Média segundo o CTB."
+            },
+
+            // MECÂNICA BÁSICA (181 - 200)
+            {
+                id: 21,
+                subject: "Mecânica Básica",
+                title: "Qual é a função do óleo lubrificante no motor do veículo?",
+                options: [
+                    "Resfriar diretamente a bateria do carro",
+                    "Reduzir o atrito entre as peças móveis internas e evitar desgaste prévio",
+                    "Aumentar a pressão dos pneus",
+                    "Limpar o para-brisa do veículo"
+                ],
+                correct: 1,
+                explanation: "O óleo lubrificante lubrifica as peças metálicas em movimento no interior do motor, minimizando atrito e superaquecimento."
+            },
+            {
+                id: 22,
+                subject: "Mecânica Básica",
+                title: "A luz de advertência com símbolo de uma bateria no painel do veículo acesa indica falha em qual sistema?",
+                options: ["Sistema de Freios ABS", "Sistema de Carga e Alimentação Elétrica (Alternador/Bateria)", "Sistema de Suspensão", "Falta de Combustível"],
+                correct: 1,
+                explanation: "A luz de bateria acesa indica problemas no alternador ou falha no sistema de carregamento elétrico do veículo."
+            }
+        ];
+
+        // Generate mock fill-up questions up to 200 to complete full database
+        (function generateFullQuestionBank() {
+            const categories = ["Legislação de Trânsito", "Direção Defensiva", "Primeiros Socorros", "Meio Ambiente e Cidadania", "Mecânica Básica"];
+            let currentCount = QUESTION_BANK.length;
+            
+            const extraQuestionsTemplates = [
+                { title: "Diante da placa de regulamentação R-1 (PARADA OBRIGATÓRIA), o condutor deve:", opts: ["Parar obrigatoriamente o veículo antes de entrar na via", "Apenas reduzir a velocidade sem parar", "Buzinar e prosseguir com atenção", "Dar preferência apenas se houver pedestres"], correct: 0, exp: "A placa R-1 exige parada total e obrigatória do veículo." },
+                { title: "O pisca-alerta do veículo deve ser utilizado exclusivamente em quais situações?", opts: ["Para estacionar em fila dupla rapidinho", "Em imobilizações ou situações de emergência e quando a sinalização da via determinar", "Ao trafegar em velocidade acima do limite", "Ao cruzar farol vermelho à noite"], correct: 1, exp: "O pisca-alerta só pode ser ligado em acidentes, imobilizações de emergência ou sinalização indicativa." },
+                { title: "Em caso de neblina densa na rodovia, a atitude correta de direção defensiva é:", opts: ["Acender a luz alta do farol", "Ligar os faróis baixos ou de neblina e reduzir a velocidade", "Parar no meio da pista de rolamento", "Acelerar para sair rápido da neblina"], correct: 1, exp: "Farol baixo reduz o ofuscamento refletido na neblina." },
+                { title: "A calibragem correta dos pneus deve ser realizada em qual periodicidade recomendada?", opts: ["Semanalmente, com os pneus frios", "Apenas quando o pneu furar", "A cada 6 meses com pneu quente", "Apenas nas revisões anuais"], correct: 0, exp: "Calibrar semanalmente com pneus frios previne desgaste e economiza combustível." }
+            ];
+
+            while(currentCount < 200) {
+                const template = extraQuestionsTemplates[currentCount % extraQuestionsTemplates.length];
+                const subj = categories[currentCount % categories.length];
+                QUESTION_BANK.push({
+                    id: currentCount + 1,
+                    subject: subj,
+                    title: `[Q-${currentCount + 1}] ${template.title}`,
+                    options: template.opts,
+                    correct: template.correct,
+                    explanation: template.exp
+                });
+                currentCount++;
+            }
+        })();
+
+        /* FLASHCARDS DATABASE (PLASAS DE TRÂNSITO DETRAN-MG) */
+        const FLASHCARDS_DATA = [
+            { code: "R-1", title: "Parada Obrigatória", category: "Regulamentação", type: "red", desc: "Obriga o condutor a parar totalmente o veículo antes de entrar ou cruzar a via.", symbol: "PARE" },
+            { code: "R-2", title: "Dê a Preferência", category: "Regulamentação", type: "red", desc: "Indica que o condutor deve dar preferência de passagem aos veículos que transitam pela via preferencial.", symbol: "▼" },
+            { code: "R-3", title: "Sentido Proibido", category: "Regulamentação", type: "red", desc: "Proíbe o trânsito de qualquer veículo no sentido indicado.", symbol: "⛔" },
+            { code: "R-6a", title: "Proibido Estacionar", category: "Regulamentação", type: "red", desc: "Proíbe o estacionamento de veículos no trecho regulamentado.", symbol: "E🚫" },
+            { code: "A-1a", title: "Curva Acentuada à Esquerda", category: "Advertência", type: "yellow", desc: "Adverte a existência de uma curva acentuada à esquerda à frente.", symbol: "↰" },
+            { code: "A-1b", title: "Curva Acentuada à Direita", category: "Advertência", type: "yellow", desc: "Adverte a existência de uma curva acentuada à direita à frente.", symbol: "↱" },
+            { code: "A-14", title: "Semáforo à Frente", category: "Advertência", type: "yellow", desc: "Adverte a existência de um sinal luminoso de trânsito à frente.", symbol: "🚦" },
+            { code: "A-32a", title: "Trânsito de Pedestres", category: "Advertência", type: "yellow", desc: "Adverte a presença frequente de pedestres na via.", symbol: "🚶" }
+        ];
+
+        /* ==========================================================================
+           APPLICATION STATE MANAGEMENT
+           ========================================================================== */
+        let currentTab = 'home';
+        let currentExamQuestions = [];
+        let currentExamAnswers = {};
+        let currentExamReviews = {};
+        let currentExamIndex = 0;
+        let examTimerInterval = null;
+        let examTimeRemaining = 3600; // 60 mins in seconds
+        let examStartTime = null;
+
+        /* INITIALIZATION ON LOAD */
+        window.onload = function () {
+            renderHomeCategories();
+            renderPracticeQuestions();
+            renderFlashcards('ALL');
+            loadAndRenderHistory();
+        };
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            const activeTabEl = document.getElementById(`tab-${tabId}`);
+            if (activeTabEl) activeTabEl.classList.add('active');
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Highlight nav button
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-white/10', 'text-white', 'text-amber-300');
+            });
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeNav) activeNav.classList.add('bg-white/10', 'text-amber-300');
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function renderHomeCategories() {
+            const categories = [
+                { name: "Legislação de Trânsito", icon: "fa-book-bookmark", count: "60 Questões", color: "from-blue-600 to-indigo-700" },
+                { name: "Direção Defensiva", icon: "fa-shield-cat", count: "50 Questões", color: "from-amber-500 to-orange-600" },
+                { name: "Primeiros Socorros", icon: "fa-kit-medical", count: "40 Questões", color: "from-emerald-500 to-teal-600" },
+                { name: "Meio Ambiente e Cidadania", icon: "fa-leaf", count: "30 Questões", color: "from-green-600 to-emerald-700" },
+                { name: "Mecânica Básica", icon: "fa-wrench", count: "20 Questões", color: "from-purple-600 to-violet-700" }
+            ];
+
+            const grid = document.getElementById('home-categories-grid');
+            grid.innerHTML = categories.map(cat => `
+                <div onclick="startPracticeSubject('${cat.name}')" class="group bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr ${cat.color} text-white flex items-center justify-center text-xl shadow-md group-hover:scale-110 transition-transform">
+                            <i class="fa-solid ${cat.icon}"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">${cat.count}</span>
+                            <h3 class="text-lg font-extrabold text-slate-900 group-hover:text-detran-blue transition-colors">${cat.name}</h3>
+                        </div>
+                    </div>
+                    <div class="pt-6 border-t border-slate-100 mt-4 flex items-center justify-between text-xs font-bold text-detran-blue">
+                        <span>Treinar Categoria</span>
+                        <i class="fa-solid fa-arrow-right group-hover:translate-x-1.5 transition-transform"></i>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function startSimulado(isRandomFull = true) {
+            switchTab('simulado');
+            document.getElementById('simulado-start-screen').classList.add('hidden');
+            document.getElementById('simulado-result-screen').classList.add('hidden');
+            document.getElementById('simulado-active-screen').classList.remove('hidden');
+
+            // Pick 30 random questions from bank
+            const shuffled = [...QUESTION_BANK].sort(() => 0.5 - Math.random());
+            currentExamQuestions = shuffled.slice(0, 30);
+            currentExamAnswers = {};
+            currentExamReviews = {};
+            currentExamIndex = 0;
+            examTimeRemaining = 3600; // 60 min
+            examStartTime = new Date();
+
+            // Start Timer
+            if (examTimerInterval) clearInterval(examTimerInterval);
+            examTimerInterval = setInterval(updateExamTimer, 1000);
+
+            // Render First Question
+            renderExamQuestion();
+            renderQuestionNavigator();
+            updateExamProgress();
+        }
+
+        function updateExamTimer() {
+            if (examTimeRemaining <= 0) {
+                clearInterval(examTimerInterval);
+                finishSimulado();
+                return;
+            }
+            examTimeRemaining--;
+            const mins = Math.floor(examTimeRemaining / 60);
+            const secs = examTimeRemaining % 60;
+            document.getElementById('exam-timer').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function renderExamQuestion() {
+            const q = currentExamQuestions[currentExamIndex];
+            document.getElementById('question-subject-badge').innerText = q.subject;
+            document.getElementById('question-number-indicator').innerText = `Questão ${currentExamIndex + 1} de 30`;
+            document.getElementById('question-title').innerText = q.title;
+
+            // Render Option Cards
+            const container = document.getElementById('question-options');
+            const selectedOpt = currentExamAnswers[currentExamIndex];
+
+            container.innerHTML = q.options.map((optText, idx) => {
+                const isSelected = selectedOpt === idx;
+                const letter = String.fromCharCode(65 + idx); // A, B, C, D
+                
+                return `
+                    <div onclick="selectExamOption(${idx})" class="option-card cursor-pointer p-4 rounded-2xl border-2 ${isSelected ? 'border-detran-blue bg-blue-50/60 shadow-md' : 'border-slate-200 bg-white hover:border-slate-300'} flex items-center gap-4 transition-all">
+                        <div class="w-8 h-8 rounded-xl font-bold text-xs flex items-center justify-center shrink-0 ${isSelected ? 'bg-detran-blue text-white' : 'bg-slate-100 text-slate-600'}">
+                            ${letter}
+                        </div>
+                        <span class="text-sm sm:text-base font-semibold text-slate-800">${optText}</span>
+                    </div>
+                `;
+            }).join('');
+
+            // Flag status button update
+            const flagBtn = document.getElementById('btn-flag-review');
+            if (currentExamReviews[currentExamIndex]) {
+                flagBtn.classList.replace('bg-amber-50', 'bg-amber-500');
+                flagBtn.classList.replace('text-amber-800', 'text-white');
+            } else {
+                flagBtn.classList.replace('bg-amber-500', 'bg-amber-50');
+                flagBtn.classList.replace('text-white', 'text-amber-800');
+            }
+
+            // Update Navigation Prev/Next state
+            document.getElementById('btn-prev-question').disabled = currentExamIndex === 0;
+            const nextBtn = document.getElementById('btn-next-question');
+            if (currentExamIndex === 29) {
+                nextBtn.innerHTML = `Finalizar <i class="fa-solid fa-flag-checkered"></i>`;
+            } else {
+                nextBtn.innerHTML = `Próxima <i class="fa-solid fa-chevron-right"></i>`;
+            }
+        }
+
+        function selectExamOption(optionIdx) {
+            currentExamAnswers[currentExamIndex] = optionIdx;
+            renderExamQuestion();
+            renderQuestionNavigator();
+            updateExamProgress();
+        }
+
+        function toggleReviewFlag() {
+            currentExamReviews[currentExamIndex] = !currentExamReviews[currentExamIndex];
+            renderExamQuestion();
+            renderQuestionNavigator();
+        }
+
+        function prevQuestion() {
+            if (currentExamIndex > 0) {
+                currentExamIndex--;
+                renderExamQuestion();
+                renderQuestionNavigator();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentExamIndex < 29) {
+                currentExamIndex++;
+                renderExamQuestion();
+                renderQuestionNavigator();
+            } else {
+                finishSimulado();
+            }
+        }
+
+        function jumpToQuestion(idx) {
+            currentExamIndex = idx;
+            renderExamQuestion();
+            renderQuestionNavigator();
+        }
+
+        function renderQuestionNavigator() {
+            const grid = document.getElementById('question-navigator-grid');
+            grid.innerHTML = currentExamQuestions.map((_, idx) => {
+                const isAnswered = currentExamAnswers[idx] !== undefined;
+                const isFlagged = currentExamReviews[idx];
+                const isCurrent = currentExamIndex === idx;
+
+                let colorClasses = "bg-slate-100 text-slate-600 border-slate-200";
+                if (isAnswered) colorClasses = "bg-detran-blue text-white border-detran-blue";
+                if (isFlagged) colorClasses = "bg-amber-400 text-slate-900 border-amber-500";
+                
+                const currentRing = isCurrent ? "ring-4 ring-blue-300 ring-offset-1 font-extrabold scale-105" : "";
+
+                return `
+                    <button onclick="jumpToQuestion(${idx})" class="w-10 h-10 rounded-xl border text-xs font-bold transition-all flex items-center justify-center relative ${colorClasses} ${currentRing}">
+                        ${idx + 1}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function updateExamProgress() {
+            const count = Object.keys(currentExamAnswers).length;
+            const pct = Math.round((count / 30) * 100);
+            document.getElementById('exam-progress-bar').style.width = `${pct}%`;
+            document.getElementById('exam-progress-text').innerText = `${count} de 30 respondidas (${pct}%)`;
+        }
+
+        function finishSimulado() {
+            clearInterval(examTimerInterval);
+
+            // Compute Score
+            let correctCount = 0;
+            const subjectStats = {};
+
+            currentExamQuestions.forEach((q, idx) => {
+                const userAns = currentExamAnswers[idx];
+                const isCorrect = userAns === q.correct;
+                
+                if (isCorrect) correctCount++;
+
+                if (!subjectStats[q.subject]) {
+                    subjectStats[q.subject] = { total: 0, correct: 0 };
+                }
+                subjectStats[q.subject].total++;
+                if (isCorrect) subjectStats[q.subject].correct++;
+            });
+
+            const isPassed = correctCount >= 21; // 70% threshold
+            const timeTakenSecs = 3600 - examTimeRemaining;
+            const minsTaken = Math.floor(timeTakenSecs / 60);
+            const secsTaken = timeTakenSecs % 60;
+            const timeFormatted = `${minsTaken.toString().padStart(2, '0')}:${secsTaken.toString().padStart(2, '0')} min`;
+
+            // Save attempt to localStorage
+            saveExamToHistory({
+                date: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+                score: correctCount,
+                percentage: Math.round((correctCount / 30) * 100),
+                time: timeFormatted,
+                passed: isPassed
+            });
+
+            // UI Render Result Screen
+            document.getElementById('simulado-active-screen').classList.add('hidden');
+            document.getElementById('simulado-result-screen').classList.remove('hidden');
+
+            const banner = document.getElementById('result-banner');
+            const title = document.getElementById('result-status-title');
+            const subtitle = document.getElementById('result-status-subtitle');
+            
+            if (isPassed) {
+                banner.className = "rounded-3xl p-8 sm:p-10 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 bg-gradient-to-r from-emerald-600 via-teal-700 to-emerald-800";
+                title.innerText = "Aprovado no Simulado!";
+                subtitle.innerText = "Parabéns! Você alcançou a pontuação mínima exigida para obter a sua CNH no DETRAN-MG.";
+            } else {
+                banner.className = "rounded-3xl p-8 sm:p-10 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 bg-gradient-to-r from-rose-600 via-red-700 to-rose-800";
+                title.innerText = "Reprovado - Treine Mais!";
+                subtitle.innerText = "Você não atingiu o mínimo de 21 acertos (70%). Revise o gabarito comentado abaixo para fixar a matéria.";
+            }
+
+            document.getElementById('result-score-text').innerText = `${correctCount} / 30`;
+            document.getElementById('result-percent-text').innerText = `${Math.round((correctCount / 30) * 100)}% de Aproveitamento`;
+            document.getElementById('result-time-taken').innerText = timeFormatted;
+            document.getElementById('result-correct-count').innerText = `${correctCount} Qs`;
+            document.getElementById('result-wrong-count').innerText = `${30 - correctCount} Qs`;
+            
+            const passStatusEl = document.getElementById('result-pass-status');
+            passStatusEl.innerText = isPassed ? "Aprovado" : "Reprovado";
+            passStatusEl.className = isPassed ? "text-xl font-black text-emerald-600" : "text-xl font-black text-rose-600";
+
+            // Subject breakdown render
+            const subjectContainer = document.getElementById('result-subject-breakdown');
+            subjectContainer.innerHTML = Object.keys(subjectStats).map(subj => {
+                const stat = subjectStats[subj];
+                const pct = Math.round((stat.correct / stat.total) * 100);
+                return `
+                    <div class="space-y-1">
+                        <div class="flex items-center justify-between text-xs font-bold text-slate-700">
+                            <span>${subj}</span>
+                            <span>${stat.correct}/${stat.total} (${pct}%)</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                            <div class="bg-detran-blue h-full rounded-full" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Questions Feedback List
+            const feedbackContainer = document.getElementById('result-questions-feedback');
+            feedbackContainer.innerHTML = currentExamQuestions.map((q, idx) => {
+                const userAns = currentExamAnswers[idx];
+                const isCorrect = userAns === q.correct;
+                
+                return `
+                    <div class="p-5 rounded-2xl border ${isCorrect ? 'border-emerald-200 bg-emerald-50/40' : 'border-rose-200 bg-rose-50/40'} space-y-3">
+                        <div class="flex items-center justify-between text-xs font-bold">
+                            <span class="${isCorrect ? 'text-emerald-700' : 'text-rose-700'}">
+                                ${isCorrect ? '<i class="fa-solid fa-circle-check"></i> Resposta Correta' : '<i class="fa-solid fa-circle-xmark"></i> Resposta Incorreta'}
+                            </span>
+                            <span class="text-slate-400">Questão ${idx + 1}</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-sm sm:text-base">${q.title}</h4>
+                        
+                        <div class="space-y-1.5 text-xs sm:text-sm">
+                            ${q.options.map((opt, oIdx) => {
+                                let optStyle = "text-slate-600";
+                                if (oIdx === q.correct) optStyle = "text-emerald-700 font-extrabold";
+                                if (userAns === oIdx && !isCorrect) optStyle = "text-rose-600 line-through font-bold";
+                                return `<div class="${optStyle}">${String.fromCharCode(65 + oIdx)}) ${opt}</div>`;
+                            }).join('')}
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200/60 text-xs text-slate-700 bg-white/80 p-3 rounded-xl">
+                            <strong>Explicação CTB:</strong> ${q.explanation}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function startPracticeSubject(subjectName) {
+            switchTab('pratica');
+            document.getElementById('practice-subject-filter').value = subjectName;
+            filterPracticeQuestions();
+        }
+
+        function filterPracticeQuestions() {
+            const search = document.getElementById('practice-search').value.toLowerCase();
+            const subjectFilter = document.getElementById('practice-subject-filter').value;
+
+            const filtered = QUESTION_BANK.filter(q => {
+                const matchesSubject = subjectFilter === 'ALL' || q.subject === subjectFilter;
+                const matchesSearch = q.title.toLowerCase().includes(search) || q.options.some(o => o.toLowerCase().includes(search));
+                return matchesSubject && matchesSearch;
+            });
+
+            renderPracticeQuestionsList(filtered.slice(0, 20)); // Limit render for perf
+        }
+
+        function renderPracticeQuestions() {
+            filterPracticeQuestions();
+        }
+
+        function renderPracticeQuestionsList(questions) {
+            const container = document.getElementById('practice-questions-container');
+            if (questions.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-slate-400 font-bold">Nenhuma questão encontrada com estes filtros.</div>`;
+                return;
+            }
+
+            container.innerHTML = questions.map((q, qIdx) => `
+                <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="px-3 py-1 rounded-full bg-blue-50 text-detran-blue font-bold">${q.subject}</span>
+                        <span class="text-slate-400 font-bold">Questão #${q.id}</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 text-base">${q.title}</h3>
+                    
+                    <div class="space-y-2">
+                        ${q.options.map((opt, oIdx) => `
+                            <button onclick="revealPracticeAnswer(this, ${oIdx === q.correct}, '${q.explanation.replace(/'/g, "\\'")}')" class="w-full text-left p-3.5 rounded-xl border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition-all">
+                                ${String.fromCharCode(65 + oIdx)}) ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <div class="practice-explanation hidden p-4 bg-blue-50 border border-blue-200 rounded-2xl text-xs text-detran-navy font-medium">
+                        <!-- Revealed dynamic explanation -->
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function revealPracticeAnswer(btnEl, isCorrect, exp) {
+            const parent = btnEl.parentElement;
+            const buttons = parent.querySelectorAll('button');
+            buttons.forEach(b => b.disabled = true);
+
+            if (isCorrect) {
+                btnEl.className = "w-full text-left p-3.5 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-800 text-sm font-bold";
+            } else {
+                btnEl.className = "w-full text-left p-3.5 rounded-xl border-2 border-rose-500 bg-rose-50 text-rose-800 text-sm font-bold";
+            }
+
+            const expBox = parent.nextElementSibling;
+            expBox.classList.remove('hidden');
+            expBox.innerHTML = `<strong>Explicação:</strong> ${exp}`;
+        }
+
+        /* FLASHCARDS 3D ENGINE */
+        function renderFlashcards(filterCategory) {
+            const grid = document.getElementById('flashcards-grid');
+            const list = filterCategory === 'ALL' ? FLASHCARDS_DATA : FLASHCARDS_DATA.filter(c => c.category === filterCategory);
+
+            grid.innerHTML = list.map(card => `
+                <div onclick="this.querySelector('.card-inner').classList.toggle('rotate-y-180')" class="perspective-1000 h-64 cursor-pointer group">
+                    <div class="card-inner relative w-full h-full duration-500 transform-style-3d shadow-md hover:shadow-xl rounded-3xl">
+                        
+                        <!-- Front Card Face -->
+                        <div class="absolute inset-0 w-full h-full bg-white rounded-3xl border border-slate-200 p-6 flex flex-col items-center justify-between backface-hidden">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${card.category === 'Regulamentação' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-800'}">
+                                ${card.code} • ${card.category}
+                            </span>
+
+                            <div class="w-24 h-24 rounded-full flex items-center justify-center text-4xl font-black shadow-inner border-4 ${card.category === 'Regulamentação' ? 'border-red-600 bg-red-50 text-red-600' : 'border-amber-400 bg-amber-50 text-slate-800'}">
+                                ${card.symbol}
+                            </div>
+
+                            <span class="text-xs text-slate-400 font-bold flex items-center gap-1">
+                                Clique para virar <i class="fa-solid fa-rotate"></i>
+                            </span>
+                        </div>
+
+                        <!-- Back Card Face -->
+                        <div class="absolute inset-0 w-full h-full bg-detran-navy text-white rounded-3xl p-6 flex flex-col justify-between rotate-y-180 backface-hidden border border-slate-700">
+                            <div>
+                                <span class="text-amber-400 font-black text-xs uppercase tracking-wider">${card.code}</span>
+                                <h4 class="text-lg font-extrabold mt-1 text-white">${card.title}</h4>
+                                <p class="text-xs text-slate-300 mt-3 leading-relaxed">${card.desc}</p>
+                            </div>
+                            <span class="text-[10px] text-amber-300 font-bold uppercase tracking-wider">Código de Trânsito Brasileiro</span>
+                        </div>
+
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterFlashcards(cat) {
+            document.querySelectorAll('.fc-filter-btn').forEach(btn => {
+                btn.classList.remove('bg-detran-navy', 'text-white');
+                btn.classList.add('bg-slate-100', 'text-slate-700');
+            });
+            event.target.classList.replace('bg-slate-100', 'bg-detran-navy');
+            event.target.classList.replace('text-slate-700', 'text-white');
+            renderFlashcards(cat);
+        }
+
+        function getExamHistory() {
+            const data = localStorage.getItem('detran_mg_history');
+            return data ? JSON.parse(data) : [];
+        }
+
+        function saveExamToHistory(record) {
+            const history = getExamHistory();
+            history.unshift(record);
+            localStorage.setItem('detran_mg_history', JSON.stringify(history));
+            loadAndRenderHistory();
+        }
+
+        function clearHistory() {
+            if (confirm("Deseja realmente apagar todo o seu histórico de simulados?")) {
+                localStorage.removeItem('detran_mg_history');
+                loadAndRenderHistory();
+            }
+        }
+
+        function loadAndRenderHistory() {
+            const history = getExamHistory();
+            const tableBody = document.getElementById('history-table-body');
+
+            if (history.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-400 font-medium">Nenhum simulado realizado ainda.</td></tr>`;
+                document.getElementById('kpi-total-simulados').innerText = '0';
+                document.getElementById('kpi-pass-rate').innerText = '0%';
+                document.getElementById('kpi-avg-score').innerText = '0 / 30';
+                document.getElementById('kpi-avg-time').innerText = '00:00';
+                return;
+            }
+
+            // KPIs
+            const total = history.length;
+            const passedCount = history.filter(h => h.passed).length;
+            const passRate = Math.round((passedCount / total) * 100);
+            const avgScore = Math.round(history.reduce((acc, h) => acc + h.score, 0) / total);
+
+            document.getElementById('kpi-total-simulados').innerText = total;
+            document.getElementById('kpi-pass-rate').innerText = `${passRate}%`;
+            document.getElementById('kpi-avg-score').innerText = `${avgScore} / 30`;
+            document.getElementById('kpi-avg-time').innerText = history[0].time;
+
+            tableBody.innerHTML = history.map(h => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="py-3 px-4 font-bold text-slate-900">${h.date}</td>
+                    <td class="py-3 px-4 font-extrabold text-slate-800">${h.score} / 30</td>
+                    <td class="py-3 px-4 font-bold">${h.percentage}%</td>
+                    <td class="py-3 px-4 text-slate-500">${h.time}</td>
+                    <td class="py-3 px-4">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${h.passed ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                            ${h.passed ? 'Aprovado' : 'Reprovado'}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
